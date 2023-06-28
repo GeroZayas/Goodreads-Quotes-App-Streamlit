@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 import streamlit as st
-import random
 
 @st.cache_data()
 def scrape_quotes(page_url):

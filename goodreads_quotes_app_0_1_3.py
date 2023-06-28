@@ -3,9 +3,8 @@ import streamlit as st
 from bs4 import BeautifulSoup
 
 #################
-# VERSION 0.1.2 #
+# VERSION 0.1.3 #
 #################
-
 
 @st.cache_data()
 def scrape_quotes(page_url):

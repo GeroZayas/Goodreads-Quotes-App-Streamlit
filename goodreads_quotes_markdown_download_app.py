@@ -22,7 +22,7 @@ def scrape_quotes(page_url):
             books.append(book_a.get_text(strip=True))
 
     with ThreadPoolExecutor() as executor:
-        [executor.submit(process_page, page_num) for page_num in range(1, 26)]
+        [executor.submit(process_page, page_num) for page_num in range(26)]
 
     return quotes, authors, books
 

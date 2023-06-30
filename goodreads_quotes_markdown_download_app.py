@@ -16,7 +16,9 @@ def scrape_quotes(page_url):
         books_a = soup.find_all("a", class_="authorOrTitle")
 
         for quote_div, author_span, book_a in zip(quotes_divs, authors_span, books_a):
-            quote_text = "".join(elem.strip() for elem in quote_div.contents if isinstance(elem, str))
+            quote_text = "".join(
+                elem.strip() for elem in quote_div.contents if isinstance(elem, str)
+            )
             quotes.append(quote_text)
             authors.append(author_span.get_text(strip=True))
             books.append(book_a.get_text(strip=True))
@@ -50,7 +52,7 @@ if __name__ == "__main__":
     import timeit
 
     start_time = timeit.default_timer()
-    
+
     ####### MAIN FUNCTION #########
     main()
     ####### MAIN FUNCTION #########

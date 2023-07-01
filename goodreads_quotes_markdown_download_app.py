@@ -4,11 +4,23 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 def scrape_quotes(page_url):
+    """
+    The function "scrape_quotes" is used to scrape quotes, authors, and books from a given webpage URL.
+    
+    :param page_url: The URL of the webpage from which you want to scrape quotes
+    """
     quotes = []
     authors = []
     books = []
 
     def process_page(page_num):
+        """
+        The function `process_page` retrieves quotes, authors, and books from a web page and stores them
+        in separate lists.
+        
+        :param page_num: The `page_num` parameter is the page number of the website you are trying to
+        scrape. It is used to construct the URL for the specific page you want to scrape
+        """
         response = requests.get(f"{page_url}?page={page_num}")
         soup = BeautifulSoup(response.text, "lxml")
         quotes_divs = soup.find_all("div", class_="quoteText")
@@ -30,6 +42,19 @@ def scrape_quotes(page_url):
 
 
 def save_quotes_to_file(quotes, authors, books, filename):
+    """
+    The function `save_quotes_to_file` takes in lists of quotes, authors, books, and a filename, and
+    saves the quotes, authors, and books to a Markdown file.
+    
+    :param quotes: The `quotes` parameter is a list of strings that contains the quotes you want to save
+    to the file
+    :param authors: The `authors` parameter is a list that contains the names of the authors
+    corresponding to each quote
+    :param books: The `books` parameter is a list that contains the titles of the books corresponding to
+    each quote
+    :param filename: The `filename` parameter is a string that represents the name of the file you want
+    to save the quotes to. It should not include the file extension
+    """
     with open(f"{filename}.md", "w", encoding="utf-8") as file:
         for i in range(len(quotes)):
             file.write(f"### {quotes[i]}\n")

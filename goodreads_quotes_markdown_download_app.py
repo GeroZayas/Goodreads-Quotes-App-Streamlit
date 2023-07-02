@@ -2,6 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor
 
+#################################################
+# TODO: Create a Typer app that uses this script 
+#################################################
+
 
 def scrape_quotes(page_url):
     """

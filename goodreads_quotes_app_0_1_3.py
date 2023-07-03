@@ -49,6 +49,8 @@ def scrape_quotes(page_url):
 
 
 def main():
+    temp_url: str = ""
+
     #############################################################
     # SIDE BAR: Suggested Quotes
     #############################################################
@@ -63,25 +65,26 @@ def main():
         "Matthew Syed": "https://www.goodreads.com/author/quotes/3414480.Matthew_Syed",
     }
     help_msg = "Get the quotes from this author"
-    for author in suggested_quotes:
-        st.sidebar.button(f"{author} 😊", key=author, help=help_msg)
+
+    for author, link in suggested_quotes.items():
+        # if sidebar.button clicked then the value of temp_url changes to the link
+        if st.sidebar.button(f"{author} ✍️", key=author, help=help_msg):
+            temp_url = link
 
     #############################################################
     # MAIN PAGE: Goodreads Author Quotes Scraper
     #############################################################
 
-    st.title("Goodreads Author Quotes Scraper 😄")
+    st.title("📚 Goodreads Quotes Scraper")
     st.write("Enter the Goodreads author quotes page URL:")
 
     # USER INPUT: Page URL ######################################
 
     # If CLICK on SIde Bar suggested quotes, then automatically scrape them
-    # if st.sidebar.button("Jordan B. Peterson", key="Jordan B. Peterson"):
-    #     page_url = suggested_quotes["Jordan B. Peterson"]
 
-    # FIXME: When it is just quotes, and there's no book, don't show the book
+    # FIXME: When it is just quotes, and there's no book, don't show the book title
     
-    page_url = st.text_input("Page URL", "https://www.goodreads.com/quotes")
+    page_url = st.text_input("Page URL", value=temp_url)
     if st.button("Scrape Quotes"):
         if page_url:
             quotes, authors, books = scrape_quotes(page_url)

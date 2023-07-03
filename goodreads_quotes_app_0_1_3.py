@@ -2,7 +2,6 @@
 # Add functionalities
 
 # TODO: Add a button to download the quotes as a Markdown file, or txt file
-# TODO: Add emojis all over the place to facilitate the reading of the quotes
 
 import requests
 import streamlit as st
@@ -49,8 +48,7 @@ def scrape_quotes(page_url):
 
 
 def main():
-    temp_url: str = ""
-
+    
     #############################################################
     # SIDE BAR: Suggested Quotes
     #############################################################
@@ -69,7 +67,11 @@ def main():
     for author, link in suggested_quotes.items():
         # if sidebar.button clicked then the value of temp_url changes to the link
         if st.sidebar.button(f"{author} ✍️", key=author, help=help_msg):
-            temp_url = link
+            # NOTE the use of st.session_state to store the page_url
+            st.session_state.page_url = link
+            
+    if 'page_url' not in st.session_state:
+        st.session_state.page_url = ''
 
     #############################################################
     # MAIN PAGE: Goodreads Author Quotes Scraper
@@ -81,11 +83,10 @@ def main():
     # USER INPUT: Page URL ######################################
 
     # If CLICK on SIde Bar suggested quotes, then automatically scrape them
-
-    # FIXME: When it is just quotes, and there's no book, don't show the book title
     
-    page_url = st.text_input("Page URL", value=temp_url)
+    page_url = st.text_input("Page URL", value=st.session_state.page_url)
     if st.button("Scrape Quotes"):
+        st.session_state.page_url = page_url
         if page_url:
             quotes, authors, books = scrape_quotes(page_url)
             st.write(f"Total Quotes: {len(quotes)} 📚", unsafe_allow_html=True)
@@ -97,9 +98,8 @@ def main():
                     f"<h5 style='color: darkred;display: inline;'>{authors[i]}</h5>",
                     unsafe_allow_html=True,
                 )
-                # FIXME: Add a space between the emoji and the book title
                 st.markdown(
-                    f"<h6 style='color: #4a008f;display: inline;'> 📖{books[i]}</h6>",
+                    f"<h6 style='color: #4a008f;display: inline;'> 📖 {books[i]}</h6>",
                     unsafe_allow_html=True,
                 )
                 st.markdown("<br>", unsafe_allow_html=True)

@@ -54,8 +54,7 @@ def main():
     #############################################################
 
     st.sidebar.title("Suggested Quotes")
-    # TODO: Click on suggested quotes and automatically scrape them
-
+    
     # DICTIONARY OF SUGGESTED QUOTES and their URLs
     suggested_quotes = {
         "Jordan B. Peterson": "https://www.goodreads.com/author/quotes/282885.Jordan_B_Peterson",
@@ -78,15 +77,29 @@ def main():
     #############################################################
 
     st.title("📚 Goodreads Quotes Scraper")
-    st.write("Enter the Goodreads author quotes page URL:")
+    st.markdown("Enter the Goodreads **author quotes page URL** \
+                or some **keywords** to search:")
 
     # USER INPUT: Page URL ######################################
-
-    # If CLICK on SIde Bar suggested quotes, then automatically scrape them
-    
     page_url = st.text_input("Page URL", value=st.session_state.page_url)
+    #############################################################
+    
+    using_search_keyword = False
+    
+    all_quotes = []
+    
     if st.button("Scrape Quotes"):
+        # this is to handle the case when the user enters a keyword instead of a URL
+        if not page_url.startswith("https://"):
+            page_url = f"https://www.goodreads.com/quotes/search?utf8=%E2%9C%93&q={page_url}&commit=Search"
+            using_search_keyword = True
+            
+        # this is to store the page_url in the session state
         st.session_state.page_url = page_url
+        
+        # eliminate numbers from the author's name
+        the_author = " ".join(page_url.split('/')[-1].split('.')[1].split('_'))
+        
         if page_url:
             quotes, authors, books = scrape_quotes(page_url)
             st.write(f"Total Quotes: {len(quotes)} 📚", unsafe_allow_html=True)
@@ -94,18 +107,35 @@ def main():
 
             for i in range(len(quotes)):
                 st.markdown(f"### 💡 {quotes[i]}")
+                
+                # this is to remove the comma at the end of the author's name
+                if authors[i].endswith(','):
+                    authors[i] = authors[i][:-1]
+                
                 st.markdown(
                     f"<h5 style='color: darkred;display: inline;'>{authors[i]}</h5>",
                     unsafe_allow_html=True,
                 )
-                st.markdown(
-                    f"<h6 style='color: #4a008f;display: inline;'> 📖 {books[i]}</h6>",
-                    unsafe_allow_html=True,
-                )
+                
+                # this is to display the book name only 
+                # if the user is not using a search keyword 
+                if not using_search_keyword:
+                    st.markdown(
+                        f"<h6 style='color: #4a008f;display: inline;'> 📖 {books[i]}</h6>",
+                        unsafe_allow_html=True,
+                    )
                 st.markdown("<br>", unsafe_allow_html=True)
                 if (i + 1) % 15 == 0 and i != len(quotes) - 1:
                     st.markdown(separator)
-
+                
+                # this is to store the quotes, authors, and books in a list    
+                all_quotes.extend([i+1, quotes[i], authors[i], books[i], '*'*60])
+                
+            # this is to download the quotes as a txt file
+            with open(f'{the_author} quotes.txt', 'w') as f:
+                for item in all_quotes:
+                    f.write("%s\n" % item)
+                
         else:
             st.write("Please enter a valid page URL.")
 

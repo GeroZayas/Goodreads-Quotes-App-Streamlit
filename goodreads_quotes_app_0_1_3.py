@@ -84,8 +84,10 @@ def main():
     page_url = st.text_input("Page URL", value=st.session_state.page_url)
     #############################################################
     
+    # this is to handle the case when the user enters a keyword instead of a URL
     using_search_keyword = False
     
+    # this is to store the quotes, authors, and books in a list
     all_quotes = []
     
     if st.button("Scrape Quotes"):
@@ -97,14 +99,16 @@ def main():
         # this is to store the page_url in the session state
         st.session_state.page_url = page_url
         
-        # eliminate numbers from the author's name
-        the_author = " ".join(page_url.split('/')[-1].split('.')[1].split('_'))
+        # eliminate numbers from the author's name in the file name
+        the_author = " ".join(page_url.split('/')[-1].split('.')[0].split('_')).title()
+
         
         if page_url:
             quotes, authors, books = scrape_quotes(page_url)
             st.write(f"Total Quotes: {len(quotes)} 📚", unsafe_allow_html=True)
             separator = "\n---\n"
 
+            # this is to display the quotes, authors, and books
             for i in range(len(quotes)):
                 st.markdown(f"### 💡 {quotes[i]}")
                 
@@ -121,7 +125,7 @@ def main():
                 # if the user is not using a search keyword 
                 if not using_search_keyword:
                     st.markdown(
-                        f"<h6 style='color: #4a008f;display: inline;'> 📖 {books[i]}</h6>",
+                        f"<h6 style='color: #4a008f;display: inline;'> 📖 {books[i]}</h6>",  # noqa: E501,
                         unsafe_allow_html=True,
                     )
                 st.markdown("<br>", unsafe_allow_html=True)
@@ -132,6 +136,8 @@ def main():
                 all_quotes.extend([i+1, quotes[i], authors[i], books[i], '*'*60])
                 
             # this is to download the quotes as a txt file
+            st.sidebar.markdown("<br> ⬇️⬇️⬇️⬇️⬇️⬇️⬇️", unsafe_allow_html=True)
+            st.sidebar.download_button("Save Quotes as a txt file", file_name=f'{the_author} quotes.txt', data=str([str(x) + '\n' for x in all_quotes]))  # noqa: E501
             with open(f'{the_author} quotes.txt', 'w') as f:
                 for item in all_quotes:
                     f.write("%s\n" % item)

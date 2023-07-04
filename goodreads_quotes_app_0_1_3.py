@@ -88,9 +88,6 @@ def main():
     # this is to handle the case when the user enters a keyword instead of a URL
     using_search_keyword = False
 
-    # this is to store the quotes, authors, and books in a list
-    all_quotes = []
-
     if st.button("Scrape Quotes"):
         # this is to handle the case when the user enters a keyword instead of a URL
         # FIXME: it is not getting all the quotes properly when using a keyword
@@ -100,7 +97,7 @@ def main():
         # this part -> Search&page=2
         if not page_url.startswith("https://"):
             page_url = f"https://www.goodreads.com/quotes/search?utf8=%E2%9C%93&q={page_url}&commit=Search"
-            using_search_keyword = True
+            using_search_keyword = True                 
 
         # this is to store the page_url in the session state
         st.session_state.page_url = page_url
@@ -117,6 +114,9 @@ def main():
             quotes, authors, books = scrape_quotes(page_url)
             st.write(f"Total Quotes: {len(quotes)} 📚", unsafe_allow_html=True)
             separator = "\n---\n"
+
+            # this is to store the quotes, authors, and books in a list
+            all_quotes = []
 
             # this is to display the quotes, authors, and books
             for i in range(len(quotes)):
@@ -163,12 +163,12 @@ def main():
                 data=all_quotes_str,
             )  # noqa: E501
 
-            #########################################################
-            # this automatically downloads the quotes as a txt file #
-            #########################################################
-            # with open(f"{the_author} quotes.txt", "w") as f:
-            #     for item in all_quotes:
-            #         f.write("%s\n" % item)
+                    #########################################################
+                    # this automatically downloads the quotes as a txt file #
+                    #########################################################
+                    # with open(f"{the_author} quotes.txt", "w") as f:
+                    #     for item in all_quotes:
+                    #         f.write("%s\n" % item)
 
         else:
             st.write("Please enter a valid page URL.")

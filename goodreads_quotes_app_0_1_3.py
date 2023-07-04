@@ -82,7 +82,7 @@ def main():
     )
 
     # USER INPUT: Page URL ######################################
-    page_url = st.text_input("Page URL", value=st.session_state.page_url)
+    page_url = st.text_input("Page URL or Keywords", value=st.session_state.page_url)
     #############################################################
 
     # this is to handle the case when the user enters a keyword instead of a URL
@@ -139,7 +139,6 @@ def main():
 
                 # this is to store the quotes, authors, and books in a list
                 all_quotes.extend([i + 1, quotes[i], authors[i], books[i], "*" * 60])
-
             # this is to download the quotes as a txt file
             st.sidebar.markdown(
                 "<br> ⬇️ ⬇️ ⬇️ ⬇️ ⬇️ ⬇️ ⬇️ ⬇️ ⬇️ ⬇️", unsafe_allow_html=True
@@ -149,11 +148,14 @@ def main():
             # DONWLOAD the quotes as a txt file #
             #####################################
 
-            # FIXME: the content of the file is not being saved correctly
+            # here we convert the all_quotes list to a string
+            all_quotes_str = '\n'.join([str(q) for q in all_quotes]) # type -> str
+
+            # here we download the quotes as a txt file
             st.sidebar.download_button(
                 "Save Quotes as a txt file",
                 file_name=f"{the_author} quotes.txt",
-                data=str([str(x) for x in all_quotes]),
+                data=all_quotes_str,
             )  # noqa: E501
 
             #########################################################

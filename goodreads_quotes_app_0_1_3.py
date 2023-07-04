@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 
 
 @st.cache_data()
-def scrape_quotes(page_url):
+def scrape_quotes(page_url, keyword_search=False, keywords=None):
     quotes = []
     authors = []
     books = []
@@ -22,7 +22,12 @@ def scrape_quotes(page_url):
     # This code block is responsible for scraping the quotes, authors, and books
     # from the Goodreads author quotes page.
     while page_num <= 25:
-        response = requests.get(f"{page_url}?page={page_num}")
+        if keyword_search and keywords:
+            response = requests.get(
+                f"https://www.goodreads.com/quotes/search?commit=Search&page={page_num}&q={keywords}&utf8=%E2%9C%93"
+            )
+        else:
+            response = requests.get(f"{page_url}?page={page_num}")
         soup = BeautifulSoup(response.text, "html.parser")
         quotes_divs = soup.find_all("div", class_="quoteText")
         authors_span = soup.find_all("span", class_="authorOrTitle")
@@ -34,7 +39,7 @@ def scrape_quotes(page_url):
         for quote_div, author_span, book_a in zip(quotes_divs, authors_span, books_a):
             quote_text = ""
             for elem in quote_div.contents:
-                if elem.name == "br":
+                if elem.name == "―":
                     break
                 if isinstance(elem, str):
                     quote_text += elem.strip()
@@ -90,28 +95,28 @@ def main():
 
     if st.button("Scrape Quotes"):
         # this is to handle the case when the user enters a keyword instead of a URL
-        # FIXME: it is not getting all the quotes properly when using a keyword
-        # the problem is that the page_url is different when using a keyword
-        # the page count is different: 
-        # NOTE: https://www.goodreads.com/quotes/search?commit=Search&page=2&q=harry+potter&utf8=%E2%9C%93 
-        # this part -> Search&page=2
         if not page_url.startswith("https://"):
-            page_url = f"https://www.goodreads.com/quotes/search?utf8=%E2%9C%93&q={page_url}&commit=Search"
-            using_search_keyword = True                 
+            page_url = "+".join(page_url.split())
+            using_search_keyword = True
 
         # this is to store the page_url in the session state
         st.session_state.page_url = page_url
 
         # this is to get the author's name from the page_url
         if using_search_keyword:
-            the_author = re.search("(?<=q=).*?(?=&)", page_url).group(0)
+            the_author = page_url.replace("+", " ")
         else:
             the_author = re.search("(?<=author/quotes/).*", page_url).group(0)
             # eleminate numbers and . from the author's name
             the_author = re.sub(r"[\d.]", "", the_author).replace("_", " ")
 
         if page_url:
-            quotes, authors, books = scrape_quotes(page_url)
+            if using_search_keyword:
+                quotes, authors, books = scrape_quotes(
+                    page_url, keyword_search=True, keywords=page_url
+                )  # noqa: E501
+            else:
+                quotes, authors, books = scrape_quotes(page_url)
             st.write(f"Total Quotes: {len(quotes)} 📚", unsafe_allow_html=True)
             separator = "\n---\n"
 
@@ -154,7 +159,7 @@ def main():
             #####################################
 
             # here we convert the all_quotes list to a string
-            all_quotes_str = '\n'.join([str(q) for q in all_quotes]) # type -> str
+            all_quotes_str = "\n".join([str(q) for q in all_quotes])  # type -> str
 
             # here we download the quotes as a txt file
             st.sidebar.download_button(
@@ -162,13 +167,6 @@ def main():
                 file_name=f"{the_author} quotes.txt",
                 data=all_quotes_str,
             )  # noqa: E501
-
-                    #########################################################
-                    # this automatically downloads the quotes as a txt file #
-                    #########################################################
-                    # with open(f"{the_author} quotes.txt", "w") as f:
-                    #     for item in all_quotes:
-                    #         f.write("%s\n" % item)
 
         else:
             st.write("Please enter a valid page URL.")

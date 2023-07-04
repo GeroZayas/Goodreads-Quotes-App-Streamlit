@@ -1,8 +1,8 @@
 # Purpose of 0.1.3 -> make it faster, use asyncio and so on
 # Add functionalities
 
-# TODO: Add a button to download the quotes as a Markdown file, or txt file
 
+import re
 import requests
 import streamlit as st
 from bs4 import BeautifulSoup
@@ -99,9 +99,13 @@ def main():
         # this is to store the page_url in the session state
         st.session_state.page_url = page_url
         
-        # eliminate numbers from the author's name in the file name
-        the_author = " ".join(page_url.split('/')[-1].split('.')[0].split('_')).title()
-
+        # this is to get the author's name from the page_url
+        if using_search_keyword:
+            the_author = re.search('(?<=q=).*?(?=&)', page_url).group(0)
+        else:
+            the_author = re.search('(?<=author/quotes/).*', page_url).group(0)
+            # eleminate numbers and . from the author's name
+            the_author = re.sub(r'[\d.]', '', the_author).replace('_', ' ')
         
         if page_url:
             quotes, authors, books = scrape_quotes(page_url)
@@ -136,8 +140,11 @@ def main():
                 all_quotes.extend([i+1, quotes[i], authors[i], books[i], '*'*60])
                 
             # this is to download the quotes as a txt file
-            st.sidebar.markdown("<br> ⬇️⬇️⬇️⬇️⬇️⬇️⬇️", unsafe_allow_html=True)
+            st.sidebar.markdown("<br> ⬇️ ⬇️ ⬇️ ⬇️ ⬇️ ⬇️ ⬇️ ⬇️ ⬇️ ⬇️", unsafe_allow_html=True)
+
             st.sidebar.download_button("Save Quotes as a txt file", file_name=f'{the_author} quotes.txt', data=str([str(x) + '\n' for x in all_quotes]))  # noqa: E501
+            
+            # FIXME: the content of the file is not being saved correctly
             with open(f'{the_author} quotes.txt', 'w') as f:
                 for item in all_quotes:
                     f.write("%s\n" % item)

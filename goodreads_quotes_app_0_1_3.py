@@ -93,6 +93,11 @@ def main():
 
     if st.button("Scrape Quotes"):
         # this is to handle the case when the user enters a keyword instead of a URL
+        # FIXME: it is not getting all the quotes properly when using a keyword
+        # the problem is that the page_url is different when using a keyword
+        # the page count is different: 
+        # NOTE: https://www.goodreads.com/quotes/search?commit=Search&page=2&q=harry+potter&utf8=%E2%9C%93 
+        # this part -> Search&page=2
         if not page_url.startswith("https://"):
             page_url = f"https://www.goodreads.com/quotes/search?utf8=%E2%9C%93&q={page_url}&commit=Search"
             using_search_keyword = True

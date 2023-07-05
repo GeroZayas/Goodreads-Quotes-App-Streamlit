@@ -1,5 +1,5 @@
 # Purpose of 0.1.3 -> make it faster, use asyncio and so on
-# Modulirize the code
+# Modulirize the code, separate the functions from the main code
 
 
 import re

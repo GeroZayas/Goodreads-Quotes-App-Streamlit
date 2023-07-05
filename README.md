@@ -1,6 +1,6 @@
 # Goodreads Quotes Scraper
 
-(Live App!)[https://goodreads-quotes.streamlit.app/]
+[Live App!](https://goodreads-quotes.streamlit.app/)
 
 This is a Python program designed to scrape quotes from an author's page on Goodreads. It provides the ability to extract quotes, along with the respective authors and books, and allows users to save the scraped data as a text file.
 

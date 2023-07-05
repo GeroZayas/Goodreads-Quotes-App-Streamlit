@@ -4,6 +4,10 @@
 
 This is a Python program designed to scrape quotes from an author's page on Goodreads. It provides the ability to extract quotes, along with the respective authors and books, and allows users to save the scraped data as a text file.
 
+## Take a look
+
+<image src="./media/images/Screenshot from 2023-07-05 19-11-36.png" alt="Screenshot of Goodreads Quotes App"></image>
+
 ## Features
 
 - Scrapes quotes, authors, and books from the Goodreads author quotes page.
